@@ -2,8 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/auth_provider.dart';
-import '../Add/add_student_form.dart';
 import '../../screens/student_list_page.dart';
+import '../../screens/location_list_page.dart';
+import '../../screens/survey_list_page.dart';
 import '../../screens/events_calendar_page.dart';
 import '../../screens/notificationscreen.dart';
 import '../../screens/dashboard_view.dart';
@@ -19,20 +20,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
   int _selectedIndex = 0;
   late final List<Widget> _pages;
   Timer? _notificationTimer;
-  bool _isFirstLoad = true;
 
   @override
   void initState() {
     super.initState();
     _pages = [
       const DashboardView(),
-      // Removed Approvals page for admin
-      const SizedBox.shrink(),
-      // Events page with restricted permissions
-      EventsCalendarPage(
-        canManageEvents:
-            true, // Admin cannot fully manage events (needs approval)
-      ),
+      SizedBox.shrink(),
+      EventsCalendarPage(canManageEvents: true),
+      const NotificationsScreen(),
     ];
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -68,18 +64,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
     super.dispose();
   }
 
-  Future<void> _refreshNotifications() async {
-    if (mounted) {
-      await context.read<AuthProvider>().fetchNotifications();
-    }
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   Widget _buildManageCard(IconData icon, String label, {VoidCallback? onTap}) {
     return Card(
       elevation: 4,
@@ -102,239 +86,130 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
-  // Limited manage cards for admin
-  List<Widget> _buildAdminManageCards() {
+  List<Widget> _buildManageCards() {
     return [
+      _buildManageCard(Icons.assessment, "Survey List", onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => SurveyListPage()),
+        );
+      }),
       _buildManageCard(Icons.people, "Student List", onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => StudentListPage()),
         );
       }),
-      _buildManageCard(Icons.person_add, "Attendees", onTap: () {
+      _buildManageCard(Icons.business, "Location List", onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => AddStudentForm()),
+          MaterialPageRoute(builder: (context) => LocationListPage()),
         );
       }),
     ];
   }
 
-  Widget _buildHelpItem(IconData icon, String title, String description) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 20, color: const Color.fromARGB(255, 21, 0, 141)),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  description,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _showHelpDialog() async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const Icon(Icons.help_outline,
-                      color: Color.fromARGB(255, 21, 0, 141)),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'Help & Information',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-              const Divider(),
-              const SizedBox(height: 10),
-              _buildHelpItem(
-                Icons.dashboard,
-                'Dashboard',
-                'Overview of your activities and statistics.',
-              ),
-              _buildHelpItem(
-                Icons.people,
-                'Student Management',
-                'View and manage student information.',
-              ),
-              _buildHelpItem(
-                Icons.event,
-                'Events',
-                'Create events (requires approval) and view calendar.',
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNotificationBadge() {
-    return Consumer<AuthProvider>(
-      builder: (context, auth, child) {
-        if (auth.isLoadingNotifications) {
-          return const SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-            ),
-          );
-        }
-
-        final count = auth.unreadNotificationsCount;
-        if (count == 0) return Container();
-
-        return Positioned(
-          right: 8,
-          top: 8,
-          child: Container(
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            constraints: const BoxConstraints(
-              minWidth: 20,
-              minHeight: 20,
-            ),
-            child: Text(
-              '$count',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  List<Widget> _buildAppBarActions() {
-    return [
-      Stack(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.white),
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const NotificationsScreen(),
-                ),
-              );
-              if (mounted) {
-                await _refreshNotifications();
-              }
-            },
-          ),
-          _buildNotificationBadge(),
-        ],
-      ),
-      IconButton(
-        icon: const Icon(Icons.refresh, color: Colors.white),
-        onPressed: _refreshNotifications,
-      ),
-      IconButton(
-        icon: const Icon(Icons.help_outline, color: Colors.white),
-        onPressed: _showHelpDialog,
-      ),
-      IconButton(
-        icon: const Icon(Icons.logout, color: Colors.white),
-        onPressed: () {
-          _notificationTimer?.cancel();
-          context.read<AuthProvider>().logout();
-        },
-      ),
-    ];
-  }
-
   List<BottomNavigationBarItem> _buildNavigationItems() {
-    return const [
-      BottomNavigationBarItem(
+    return [
+      const BottomNavigationBarItem(
         icon: Icon(Icons.dashboard),
         label: 'Dashboard',
       ),
-      BottomNavigationBarItem(
+      const BottomNavigationBarItem(
         icon: Icon(Icons.admin_panel_settings),
         label: 'Manage',
       ),
-      BottomNavigationBarItem(
+      const BottomNavigationBarItem(
         icon: Icon(Icons.event),
         label: 'Events',
+      ),
+      BottomNavigationBarItem(
+        icon: Stack(
+          children: [
+            const Icon(Icons.notifications),
+            Consumer<AuthProvider>(
+              builder: (context, authProvider, child) {
+                final unreadCount = authProvider.unreadNotificationsCount;
+                if (unreadCount == 0) return const SizedBox.shrink();
+                return Positioned(
+                  right: -5,
+                  top: -5,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 15,
+                      minHeight: 15,
+                    ),
+                    child: Text(
+                      '$unreadCount',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+        label: 'Notifications',
+      ),
+      const BottomNavigationBarItem(
+        icon: Icon(Icons.logout),
+        label: 'Logout',
       ),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+
     if (_selectedIndex == 1) {
       _pages[1] = GridView.count(
         crossAxisCount: 2,
         padding: const EdgeInsets.all(16.0),
         crossAxisSpacing: 16.0,
         mainAxisSpacing: 16.0,
-        children: _buildAdminManageCards(),
+        children: _buildManageCards(),
       );
+    }
+
+    void handleNavigation(int index) {
+      if (index == _buildNavigationItems().length - 1) {
+        // Logout button index
+        _notificationTimer?.cancel();
+        authProvider.logout();
+      } else {
+        setState(() {
+          _selectedIndex = index;
+        });
+      }
     }
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 21, 0, 141),
-        title: const Text(
-          'Admin Dashboard',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-            color: Colors.white,
+      appBar: PreferredSize(
+        preferredSize:
+            Size.fromHeight(MediaQuery.of(context).size.height * 0.1),
+        child: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.white,
+          flexibleSpace: ClipRRect(
+            child: Image.asset(
+              'images/claveria.png',
+              fit: BoxFit.cover,
+              width: double.infinity,
+            ),
           ),
+          centerTitle: true,
         ),
-        actions: _buildAppBarActions(),
       ),
       body: Container(
         color: Colors.white,
@@ -343,7 +218,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       bottomNavigationBar: BottomNavigationBar(
         items: _buildNavigationItems(),
         currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+        onTap: handleNavigation,
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white70,
         backgroundColor: const Color.fromARGB(255, 21, 0, 141),

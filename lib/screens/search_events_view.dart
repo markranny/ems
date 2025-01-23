@@ -14,10 +14,17 @@ class SearchEventsView extends StatefulWidget {
 
 class _SearchEventsViewState extends State<SearchEventsView> {
   final TextEditingController _searchController = TextEditingController();
+  List<Events> _allEvents = [];
   List<Events> _searchResults = [];
   bool _isLoading = false;
   String? _error;
   Timer? _debounceTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAllEvents();
+  }
 
   @override
   void dispose() {
@@ -26,38 +33,53 @@ class _SearchEventsViewState extends State<SearchEventsView> {
     super.dispose();
   }
 
-  Future<void> _performSearch(String query) async {
-    if (query.isEmpty) {
-      setState(() {
-        _searchResults = [];
-        _error = null;
-      });
-      return;
-    }
-
+  Future<void> _fetchAllEvents() async {
     setState(() {
       _isLoading = true;
       _error = null;
     });
 
     try {
+      final now = DateTime.now();
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final results = await authProvider.searchEvents(query);
+      final events = await authProvider.fetchEvents(now.month, now.year);
+
+      // Flatten the map of events into a single list
+      final flattenedEvents = events.values.expand((e) => e).toList();
 
       if (mounted) {
         setState(() {
-          _searchResults = results;
+          _allEvents = flattenedEvents;
+          _searchResults = flattenedEvents;
           _isLoading = false;
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Error searching events: $e';
+          _error = 'Error loading events: $e';
           _isLoading = false;
         });
       }
     }
+  }
+
+  void _performSearch(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        _searchResults = _allEvents;
+      });
+      return;
+    }
+
+    final lowercaseQuery = query.toLowerCase();
+    setState(() {
+      _searchResults = _allEvents.where((event) {
+        return event.title.toLowerCase().contains(lowercaseQuery) ||
+            event.description.toLowerCase().contains(lowercaseQuery) ||
+            event.location.toLowerCase().contains(lowercaseQuery);
+      }).toList();
+    });
   }
 
   void _onSearchChanged(String query) {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/auth_provider.dart';
 import 'register_screen.dart';
+import 'add_student_form.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -18,7 +19,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
   bool _rememberMe = false; // Added remember me state
 
-  // Add error tracking for assets
   bool _backgroundLoadError = false;
   bool _logoLoadError = false;
 
@@ -319,41 +319,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                   return null;
                                 },
                               ),
-                              const SizedBox(height: 16),
-                              // Added Remember Me Row
-                              /* Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Checkbox(
-                                        value: _rememberMe,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _rememberMe = value ?? false;
-                                          });
-                                        },
-                                        activeColor:
-                                            Theme.of(context).primaryColor,
-                                      ),
-                                      const Text('Remember me'),
-                                    ],
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      // Add forgot password functionality
-                                    },
-                                    child: Text(
-                                      'Forgot Password?',
-                                      style: TextStyle(
-                                        color: Theme.of(context).primaryColor,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ), */
                               const SizedBox(height: 24),
                               SizedBox(
                                 width: double.infinity,
@@ -414,6 +379,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
+            ),
+          ),
+          Positioned(
+            top: 10,
+            right: 10,
+            child: IconButton(
+              icon: Icon(
+                Icons.person_add,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddStudentForm(),
+                  ),
+                );
+              },
             ),
           ),
         ],

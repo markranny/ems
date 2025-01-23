@@ -2,8 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/auth_provider.dart';
-import '../Add/add_student_form.dart';
-import '../../screens/events_calendar_page.dart';
+import '../../screens/student_survey_page.dart';
 import '../../screens/notificationscreen.dart';
 import '../../screens/dashboard_view.dart';
 
@@ -18,15 +17,15 @@ class _StudentDashboardState extends State<StudentDashboard> {
   int _selectedIndex = 0;
   late final List<Widget> _pages;
   Timer? _notificationTimer;
-  bool _isFirstLoad = true;
 
   @override
   void initState() {
     super.initState();
     _pages = [
       const DashboardView(),
-      EventsCalendarPage(
-          canManageEvents: false), // Students can't manage events
+      const StudentSurveyPage(), // Changed from EventsCalendarPage to SurveyListPage
+      const NotificationsScreen(),
+      const SizedBox.shrink(), // Placeholder for logout
     ];
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -36,11 +35,9 @@ class _StudentDashboardState extends State<StudentDashboard> {
 
   void _initializeNotifications() async {
     if (!mounted) return;
-
     try {
       final authProvider = context.read<AuthProvider>();
       await authProvider.fetchNotifications();
-
       _notificationTimer?.cancel();
       _notificationTimer =
           Timer.periodic(const Duration(minutes: 1), (_) async {
@@ -66,32 +63,6 @@ class _StudentDashboardState extends State<StudentDashboard> {
     if (mounted) {
       await context.read<AuthProvider>().fetchNotifications();
     }
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  Widget _buildManageCard(IconData icon, String label, {VoidCallback? onTap}) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 40, color: const Color.fromARGB(255, 21, 0, 141)),
-            SizedBox(height: 8),
-            Text(label,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center),
-          ],
-        ),
-      ),
-    );
   }
 
   Widget _buildHelpItem(IconData icon, String title, String description) {
@@ -169,9 +140,9 @@ class _StudentDashboardState extends State<StudentDashboard> {
                 'Overview of your activities and events.',
               ),
               _buildHelpItem(
-                Icons.event,
-                'Events',
-                'View upcoming events and calendar.',
+                Icons.assignment, // Changed icon to represent surveys
+                'Surveys',
+                'View and complete event surveys.',
               ),
             ],
           ),
@@ -180,130 +151,101 @@ class _StudentDashboardState extends State<StudentDashboard> {
     );
   }
 
-  Widget _buildNotificationBadge() {
-    return Consumer<AuthProvider>(
-      builder: (context, auth, child) {
-        if (auth.isLoadingNotifications) {
-          return const SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-            ),
-          );
-        }
-
-        final count = auth.unreadNotificationsCount;
-        if (count == 0) return Container();
-
-        return Positioned(
-          right: 8,
-          top: 8,
-          child: Container(
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            constraints: const BoxConstraints(
-              minWidth: 20,
-              minHeight: 20,
-            ),
-            child: Text(
-              '$count',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  List<Widget> _buildAppBarActions() {
-    return [
-      Stack(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.white),
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const NotificationsScreen(),
-                ),
-              );
-              if (mounted) {
-                await _refreshNotifications();
-              }
-            },
-          ),
-          _buildNotificationBadge(),
-        ],
-      ),
-      IconButton(
-        icon: const Icon(Icons.refresh, color: Colors.white),
-        onPressed: _refreshNotifications,
-      ),
-      IconButton(
-        icon: const Icon(Icons.help_outline, color: Colors.white),
-        onPressed: _showHelpDialog,
-      ),
-      IconButton(
-        icon: const Icon(Icons.logout, color: Colors.white),
-        onPressed: () {
-          _notificationTimer?.cancel();
-          context.read<AuthProvider>().logout();
-        },
-      ),
-    ];
-  }
-
-  /* List<BottomNavigationBarItem> _buildNavigationItems() {
+  List<BottomNavigationBarItem> _buildNavigationItems() {
     return [
       const BottomNavigationBarItem(
-        icon: Icon(Icons.dashboard),
-        label: 'Dashboard',
-      ),
+          icon: Icon(Icons.dashboard), label: 'Dashboard'),
       const BottomNavigationBarItem(
-        icon: Icon(Icons.event),
-        label: 'Events',
+          icon: Icon(Icons.assignment),
+          label: 'Survey'), // Changed from Events to Survey
+      BottomNavigationBarItem(
+        icon: Stack(
+          children: [
+            const Icon(Icons.notifications),
+            Consumer<AuthProvider>(
+              builder: (context, authProvider, child) {
+                final unreadCount = authProvider.unreadNotificationsCount;
+                if (unreadCount == 0) return const SizedBox.shrink();
+                return Positioned(
+                  right: -5,
+                  top: -5,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 15,
+                      minHeight: 15,
+                    ),
+                    child: Text(
+                      '$unreadCount',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+        label: 'Notifications',
       ),
+      const BottomNavigationBarItem(icon: Icon(Icons.logout), label: 'Logout'),
     ];
-  } */
+  }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+
+    void handleNavigation(int index) {
+      if (index == _buildNavigationItems().length - 1) {
+        // Logout button index
+        _notificationTimer?.cancel();
+        authProvider.logout();
+      } else {
+        setState(() {
+          _selectedIndex = index;
+        });
+      }
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 21, 0, 141),
-        title: const Text(
-          'Student Dashboard',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-            color: Colors.white,
+      appBar: PreferredSize(
+        preferredSize:
+            Size.fromHeight(MediaQuery.of(context).size.height * 0.1),
+        child: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.white,
+          flexibleSpace: ClipRRect(
+            child: Image.asset(
+              'images/claveria.png',
+              fit: BoxFit.cover,
+              width: double.infinity,
+            ),
           ),
+          centerTitle: true,
         ),
-        actions: _buildAppBarActions(),
       ),
       body: Container(
         color: Colors.white,
         child: _pages[_selectedIndex],
       ),
-      /* bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: BottomNavigationBar(
         items: _buildNavigationItems(),
         currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+        onTap: handleNavigation,
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white70,
         backgroundColor: const Color.fromARGB(255, 21, 0, 141),
         type: BottomNavigationBarType.fixed,
-      ), */
+      ),
     );
   }
 }

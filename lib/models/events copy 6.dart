@@ -128,14 +128,6 @@ class Events {
       }
     }
 
-    // Parse and normalize status
-    String parseStatus(dynamic rawStatus) {
-      if (rawStatus == null) return 'pending';
-      final status = rawStatus.toString().toLowerCase();
-      // Convert 'draft' to 'pending' for consistency
-      return status == 'draft' ? 'pending' : status;
-    }
-
     final allowedViewData = parseAllowedView(json['allowedView']);
     debugPrint('Parsed allowedView: $allowedViewData');
 
@@ -149,7 +141,7 @@ class Events {
       location: json['location'] as String? ?? '',
       creatorId: json['creator_id'] as int? ?? 0,
       maxParticipants: json['max_participants'] as int? ?? 0,
-      status: parseStatus(json['status']),
+      status: json['status'] as String? ?? 'draft',
       eventImagePath: json['eventImagePath'] as String?,
       allowedView: allowedViewData,
     );
@@ -167,7 +159,7 @@ class Events {
       'max_participants': maxParticipants,
       'status': status,
       'eventImagePath': eventImagePath,
-      'allowedView': json.encode(allowedView), // Ensure it's properly encoded
+      'allowedView': allowedView,
     };
   }
 
@@ -215,6 +207,8 @@ class Events {
           ? eventImagePath!
           : '/$eventImagePath';
       final baseUrl = 'https://eljincorp.com';
+      /* 'http://10.151.5.239:8080/'; */
+
       return Uri.parse('$baseUrl$path').toString();
     } catch (e) {
       debugPrint('Error formatting image URL: $e');
@@ -251,26 +245,7 @@ class Events {
   }
 
   String get readableStatus {
-    // Convert status to display format
-    switch (status.toLowerCase()) {
-      case 'published':
-        return 'Published';
-      case 'draft':
-      case 'pending':
-        return 'Pending';
-      case 'cancelled':
-        return 'Cancelled';
-      case 'completed':
-        return 'Completed';
-      default:
-        return status[0].toUpperCase() + status.substring(1);
-    }
-  }
-
-  // Add a method to get status for filtering
-  String get filterStatus {
-    // Normalize status for filtering
-    return status.toLowerCase() == 'draft' ? 'pending' : status.toLowerCase();
+    return status[0].toUpperCase() + status.substring(1);
   }
 
   Events copyWith({

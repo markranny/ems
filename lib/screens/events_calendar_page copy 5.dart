@@ -684,13 +684,9 @@ class _EventDetailsDialogState extends State<EventDetailsDialog> {
 
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-      // Convert event ID to string, handling different possible input types
+      // Convert event ID to string explicitly
       final eventIdString = widget.event.id.toString();
-
       final response = await authProvider.getEventResponses([eventIdString]);
-
-      // Debug print to understand response structure
-      debugPrint('Event Responses: $response');
 
       Map<String, List<Map<String, dynamic>>> groupedAttendees = {
         'Going': [],
@@ -699,26 +695,18 @@ class _EventDetailsDialogState extends State<EventDetailsDialog> {
       };
 
       if (response['success'] == true && response['data'] != null) {
-        // Try multiple ways of accessing event responses
-        final eventResponses = response['data'][eventIdString] ??
-            response['data'][widget.event.id] ??
-            response['data']['${widget.event.id}'] ??
-            response['data'];
+        // Use event ID string for lookup
+        final eventResponses = response['data'][eventIdString];
 
         if (eventResponses != null) {
-          // Ensure eventResponses is a list
-          final attendeeList =
-              eventResponses is List ? eventResponses : [eventResponses];
-
-          for (var response in attendeeList) {
+          for (var response in eventResponses) {
             final attendee = {
               'name': response['user_name'] ?? 'Anonymous',
               'userId': response['user_id'],
               'timestamp': DateTime.parse(response['created_at']),
-              'response': response['response'] ?? 'Maybe',
             };
 
-            switch (attendee['response']) {
+            switch (response['response']) {
               case 'Going':
                 groupedAttendees['Going']!.add(attendee);
                 break;
@@ -745,10 +733,7 @@ class _EventDetailsDialogState extends State<EventDetailsDialog> {
           _isLoading = false;
         });
       }
-    } catch (e, stackTrace) {
-      debugPrint('Error in _fetchAttendees: $e');
-      debugPrint('Stacktrace: $stackTrace');
-
+    } catch (e) {
       if (mounted) {
         setState(() {
           _error = e.toString();

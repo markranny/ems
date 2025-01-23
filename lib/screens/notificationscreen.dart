@@ -34,10 +34,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     try {
       setState(() => _isMarkingAll = true);
-
-      // Call the batch operation to mark all as read
       await auth.markAllNotificationsAsRead();
-
       _showSnackBar('All notifications marked as read', isError: false);
     } catch (e) {
       _showSnackBar('Error marking notifications as read: $e', isError: true);
@@ -55,7 +52,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         backgroundColor: isError ? Colors.red : Colors.green,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        margin: const EdgeInsets.all(20), // Add some margin from all sides
+        margin: const EdgeInsets.all(20),
       ),
     );
   }
@@ -78,6 +75,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   Widget _buildEmptyState() {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -85,13 +83,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color: isDarkMode ? Colors.grey[800] : Colors.grey[100],
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.notifications_none_outlined,
               size: 80,
-              color: Colors.grey[400],
+              color: isDarkMode ? Colors.grey[500] : Colors.grey[400],
             ),
           ),
           const SizedBox(height: 24),
@@ -100,7 +98,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
-              color: Colors.grey[700],
+              color: isDarkMode ? Colors.white : Colors.grey[700],
             ),
           ),
           const SizedBox(height: 8),
@@ -108,7 +106,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             'You\'ll see your notifications here',
             style: TextStyle(
               fontSize: 16,
-              color: Colors.grey[600],
+              color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
             ),
           ),
         ],
@@ -117,6 +115,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   Widget _buildErrorState(AuthProvider auth) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -124,10 +123,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.red[50],
+              color: isDarkMode
+                  ? Colors.red[900]?.withOpacity(0.3)
+                  : Colors.red[50],
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+            child: Icon(Icons.error_outline,
+                size: 64,
+                color: isDarkMode ? Colors.red[300] : Colors.red[300]),
           ),
           const SizedBox(height: 24),
           Text(
@@ -135,13 +138,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
-              color: Colors.grey[800],
+              color: isDarkMode ? Colors.white : Colors.grey[800],
             ),
           ),
           const SizedBox(height: 8),
           Text(
             'Unable to load notifications',
-            style: TextStyle(color: Colors.grey[600], fontSize: 16),
+            style: TextStyle(
+                color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                fontSize: 16),
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
@@ -149,7 +154,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             icon: const Icon(Icons.refresh),
             label: const Text('Try Again'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromARGB(255, 21, 0, 141),
+              backgroundColor: isDarkMode
+                  ? const Color.fromARGB(255, 50, 50, 100)
+                  : const Color.fromARGB(255, 21, 0, 141),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
@@ -175,6 +182,28 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Widget _buildNotificationItem(
       EventNotification notification, AuthProvider auth) {
     final dismissKey = UniqueKey();
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    // Dynamic color palette based on read/unread and theme
+    Color backgroundColor = isDarkMode
+        ? (notification.isRead
+            ? Colors.grey[800]!
+            : const Color.fromARGB(255, 45, 45, 100))
+        : (notification.isRead ? Colors.white : Colors.blue[50]!);
+
+    Color iconBackgroundColor = isDarkMode
+        ? (notification.isRead
+            ? Colors.grey[700]!
+            : const Color.fromARGB(255, 21, 0, 141))
+        : (notification.isRead
+            ? Colors.grey[100]!
+            : const Color.fromARGB(255, 21, 0, 141));
+
+    Color textColor = isDarkMode
+        ? (notification.isRead ? Colors.grey[400]! : Colors.white)
+        : (notification.isRead ? Colors.grey[700]! : Colors.black);
+
+    Color subtextColor = isDarkMode ? Colors.grey[500]! : Colors.grey[600]!;
 
     return Dismissible(
       key: dismissKey,
@@ -190,23 +219,30 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text('Delete Notification'),
-              content: const Text(
+              title: Text('Delete Notification',
+                  style: TextStyle(
+                      color: isDarkMode ? Colors.white : Colors.black)),
+              content: Text(
                 'Are you sure you want to delete this notification?',
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(
+                    fontSize: 16,
+                    color: isDarkMode ? Colors.grey[300] : Colors.black),
               ),
+              backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('Cancel'),
+                  child: Text('Cancel',
+                      style: TextStyle(
+                          color: isDarkMode ? Colors.white : Colors.black)),
                 ),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(true),
                   style: TextButton.styleFrom(
-                    foregroundColor: Colors.red,
+                    foregroundColor: isDarkMode ? Colors.red[300] : Colors.red,
                   ),
                   child: const Text('Delete'),
                 ),
@@ -220,10 +256,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: notification.isRead ? Colors.white : Colors.blue[50],
+          color: backgroundColor,
           border: Border(
             bottom: BorderSide(
-              color: Colors.grey[200]!,
+              color: isDarkMode ? Colors.grey[700]! : Colors.grey[200]!,
               width: 1,
             ),
           ),
@@ -248,16 +284,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: notification.isRead
-                        ? Colors.grey[100]
-                        : const Color.fromARGB(255, 21, 0, 141),
+                    color: iconBackgroundColor,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.event_outlined,
                     size: 24,
-                    color:
-                        notification.isRead ? Colors.grey[600] : Colors.white,
+                    color: isDarkMode
+                        ? Colors.white
+                        : (notification.isRead
+                            ? Colors.grey[600]
+                            : Colors.white),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -275,7 +312,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                 fontWeight: notification.isRead
                                     ? FontWeight.w500
                                     : FontWeight.w600,
-                                color: const Color.fromARGB(221, 255, 255, 255),
+                                color: textColor,
                               ),
                             ),
                           ),
@@ -283,8 +320,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             Container(
                               width: 8,
                               height: 8,
-                              decoration: const BoxDecoration(
-                                color: Color.fromARGB(255, 21, 0, 141),
+                              decoration: BoxDecoration(
+                                color: isDarkMode
+                                    ? Colors.white
+                                    : const Color.fromARGB(255, 21, 0, 141),
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -295,7 +334,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         notification.message,
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[700],
+                          color: subtextColor,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -303,7 +342,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         _getTimeAgo(notification.createdAt),
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[500],
+                          color: subtextColor,
                         ),
                       ),
                     ],
@@ -319,18 +358,22 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Notifications',
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 20,
-            color: Color.fromARGB(255, 255, 255, 255), // White text
+            color: Colors.white,
           ),
         ),
-        backgroundColor: const Color.fromARGB(255, 21, 0, 141),
+        backgroundColor: isDarkMode
+            ? const Color.fromARGB(255, 10, 10, 70)
+            : const Color.fromARGB(255, 21, 0, 141),
         elevation: 0,
         actions: [
           Consumer<AuthProvider>(
@@ -346,21 +389,24 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                               height: 16,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    isDarkMode ? Colors.white : Colors.white),
                               ),
                             )
-                          : const Icon(Icons.done_all, color: Colors.white),
-                      label: const Text(
+                          : Icon(Icons.done_all,
+                              color: isDarkMode ? Colors.white : Colors.white),
+                      label: Text(
                         'Mark all read',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(
+                            color: isDarkMode ? Colors.white : Colors.white),
                       ),
                     )
                   : const SizedBox.shrink();
             },
           ),
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: Icon(Icons.refresh,
+                color: isDarkMode ? Colors.white : Colors.white),
             onPressed: () => context.read<AuthProvider>().fetchNotifications(),
           ),
         ],
@@ -368,10 +414,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       body: Consumer<AuthProvider>(
         builder: (context, auth, _) {
           if (auth.isLoadingNotifications) {
-            return const Center(
+            return Center(
               child: CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(
-                  Color.fromARGB(255, 21, 0, 141),
+                  isDarkMode
+                      ? Colors.white
+                      : const Color.fromARGB(255, 21, 0, 141),
                 ),
               ),
             );
@@ -387,7 +435,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
           return RefreshIndicator(
             onRefresh: () => auth.fetchNotifications(),
-            color: const Color.fromARGB(255, 21, 0, 141),
+            color: isDarkMode
+                ? Colors.white
+                : const Color.fromARGB(255, 21, 0, 141),
             child: ListView.builder(
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),

@@ -262,7 +262,7 @@ class _EditEventPageState extends State<EditEventPage> {
                         labelText: 'Status',
                         border: OutlineInputBorder(),
                       ),
-                      items: ['draft', 'published', 'cancelled', 'completed']
+                      items: ['pending', 'published']
                           .map((status) => DropdownMenuItem(
                                 value: status,
                                 child: Text(status.toUpperCase()),

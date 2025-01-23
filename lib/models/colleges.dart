@@ -16,4 +16,11 @@ class Colleges {
   String toString() {
     return college; // Return the name of the college
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'college': college,
+    };
+  }
 }

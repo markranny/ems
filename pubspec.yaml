@@ -38,6 +38,7 @@ flutter:
     - assets/animations/active.json
     - assets/animations/upcoming.json
     - assets/animations/waiting.json
+    - assets/animations/recent.json
     - images/claveria.jpg
     - images/claveria.png
 

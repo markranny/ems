@@ -58,8 +58,6 @@ class _PendingUsersScreenState extends State<PendingUsersScreen> {
     }
   }
 
-  // In _PendingUsersScreenState class
-
   Future<void> _handleApproval(User user) async {
     try {
       await showDialog(
@@ -222,7 +220,7 @@ class _PendingUsersScreenState extends State<PendingUsersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pending Users'),
+        title: const Text('Pending Admin'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

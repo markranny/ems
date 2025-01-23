@@ -36,4 +36,13 @@ class Faculty {
       rethrow;
     }
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'description': description,
+      // Avoid circular reference by not including full user object
+      'user_id': user.id,
+    };
+  }
 }

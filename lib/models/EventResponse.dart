@@ -3,7 +3,7 @@ class EventResponse {
   final int eventId;
   final int userId;
   final String response;
-  final String userName; // Add this to get the user's name
+  final String userName;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -18,15 +18,24 @@ class EventResponse {
   });
 
   factory EventResponse.fromJson(Map<String, dynamic> json) {
+    // Safe integer parsing function
+    int parseIntSafely(dynamic value) {
+      if (value == null) return 0;
+      if (value is int) return value;
+      if (value is String) {
+        return int.tryParse(value) ?? 0;
+      }
+      return 0;
+    }
+
     return EventResponse(
-      id: json['id'],
-      eventId: json['event_id'],
-      userId: json['user_id'],
-      response: json['response'],
-      userName: json['user_name'] ??
-          'Anonymous', // Fallback to 'Anonymous' if name is not provided
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
+      id: parseIntSafely(json['id']),
+      eventId: parseIntSafely(json['event_id']),
+      userId: parseIntSafely(json['user_id']),
+      response: json['response']?.toString() ?? '',
+      userName: json['user_name']?.toString() ?? 'Anonymous',
+      createdAt: DateTime.parse(json['created_at'].toString()),
+      updatedAt: DateTime.parse(json['updated_at'].toString()),
     );
   }
 }

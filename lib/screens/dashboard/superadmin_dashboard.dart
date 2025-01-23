@@ -13,6 +13,8 @@ import '../../screens/notificationscreen.dart';
 import '../../screens/dashboard_view.dart';
 import '../../screens/pending_users_screen.dart';
 import '../../screens/location_list_page.dart';
+import '../../screens/survey_list_page.dart';
+import '../../screens/pending_students_screen.dart';
 
 class SuperAdminDashboard extends StatefulWidget {
   const SuperAdminDashboard({Key? key}) : super(key: key);
@@ -123,6 +125,14 @@ class _SuperAdminDashboardState extends State<SuperAdminDashboard> {
         _buildManageCard(Icons.business, "Location List", onTap: () {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => LocationListPage()));
+        }),
+        _buildManageCard(Icons.assessment, "Survey List", onTap: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => SurveyListPage()));
+        }),
+        _buildManageCard(Icons.people, "Pending Student", onTap: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => PendingStudentsScreen()));
         }),
       ];
     } else if (userRole == 'admin') {

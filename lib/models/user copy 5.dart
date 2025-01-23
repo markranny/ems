@@ -74,20 +74,4 @@ class User {
   }
 
   int? get collegeId => student?.collegeId;
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'username': username,
-      'email': email,
-      'role': role,
-      'status': status,
-      'created_at': createdAt,
-      'profile_photo_url': profilePhotoUrl,
-      'description': description,
-      'student': student?.toJson(),
-      'faculty': faculty?.toJson(),
-      'executive': executive?.toJson(),
-    };
-  }
 }

@@ -16,4 +16,11 @@ class Departments {
   String toString() {
     return description; // Return the description of the department
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'description': description,
+    };
+  }
 }

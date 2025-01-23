@@ -19,24 +19,12 @@ class Students {
 
   factory Students.fromJson(Map<String, dynamic> json) {
     try {
-      // Using ?? to provide an empty map if college/department is null
-      final collegeData = json['college'] as Map<String, dynamic>? ?? {};
-      final departmentData = json['department'] as Map<String, dynamic>? ?? {};
-
       return Students(
         id: json['id'],
         fullname: json['fullname'],
-        college: Colleges.fromJson(collegeData),
-        department: Departments.fromJson(departmentData),
-        // Use parent User object instead of trying to parse nested user
-        user: User(
-            id: json['user_id'],
-            username:
-                '', // These fields won't be used since we have the parent User
-            email: '',
-            role: '',
-            createdAt: '',
-            profilePhotoUrl: ''),
+        college: Colleges.fromJson(json['college']),
+        department: Departments.fromJson(json['department']),
+        user: User.fromJson(json['user']),
       );
     } catch (e, stackTrace) {
       print('Error parsing Students: $e');

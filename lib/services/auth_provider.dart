@@ -19,6 +19,7 @@ import '../models/events.dart';
 import '../models/location.dart';
 import '../models/EventResponse.dart';
 import '../models/EventNotification.dart';
+import '../models/survey.dart';
 
 class AuthProvider with ChangeNotifier {
   List<EventNotification> _notifications = [];
@@ -45,7 +46,7 @@ class AuthProvider with ChangeNotifier {
   String? get error => _error;
 
   final String baseUrl = 'https://eljincorp.com';
-  /* final String baseUrl = 'http://10.151.5.239:8080'; */
+  /*  final String baseUrl = 'http://10.151.5.239:8080'; */
   /* final String baseUrl = 'http://127.0.0.1:8000'; */
 
   // Token Management
@@ -108,7 +109,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.get(
         Uri.parse('$baseUrl/api/pending-admin-requests'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       if (response.statusCode == 403) {
@@ -148,7 +153,11 @@ class AuthProvider with ChangeNotifier {
 
       final response = await http.put(
         Uri.parse('$baseUrl/api/approve-admin-request/$userId'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       print('Approval response status: ${response.statusCode}');
@@ -262,7 +271,11 @@ class AuthProvider with ChangeNotifier {
 
       final response = await http.post(
         Uri.parse('$baseUrl/api/register'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode(body),
       );
 
@@ -314,7 +327,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.get(
         Uri.parse('$baseUrl/api/user'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -341,7 +358,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.get(
         Uri.parse('$baseUrl/api/students'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       _loading = false;
@@ -382,7 +403,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.get(
         Uri.parse('$baseUrl/api/colleges'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       _loading = false;
@@ -410,7 +435,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.get(
         Uri.parse('$baseUrl/api/departments'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       _loading = false;
@@ -478,7 +507,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.put(
         Uri.parse('$baseUrl/api/user/profile'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode(userData),
       );
 
@@ -511,7 +544,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.post(
         Uri.parse('$baseUrl/api/user/change-password'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode({
           'current_password': currentPassword,
           'new_password': newPassword,
@@ -545,7 +582,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.post(
         Uri.parse('$baseUrl/api/students'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode({
           'fullname': fullName,
           'email': email,
@@ -579,7 +620,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.post(
         Uri.parse('$baseUrl/api/colleges'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode({
           'college': collegeName,
         }),
@@ -610,7 +655,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.post(
         Uri.parse('$baseUrl/api/departments'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode({
           'description': description,
         }),
@@ -641,7 +690,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.put(
         Uri.parse('$baseUrl/api/departments/$id'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode({
           'description': description,
         }),
@@ -671,7 +724,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.delete(
         Uri.parse('$baseUrl/api/departments/$id'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       _loading = false;
@@ -698,7 +755,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.put(
         Uri.parse('$baseUrl/api/colleges/$id'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode({
           'college': collegeName,
         }),
@@ -729,7 +790,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.delete(
         Uri.parse('$baseUrl/api/colleges/$id'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       _loading = false;
@@ -777,7 +842,11 @@ class AuthProvider with ChangeNotifier {
 
       final response = await http.put(
         Uri.parse('$baseUrl/api/students/$id'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode(body),
       );
 
@@ -809,7 +878,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.delete(
         Uri.parse('$baseUrl/api/students/$id'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       _loading = false;
@@ -836,7 +909,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.get(
         Uri.parse('$baseUrl/api/executives'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       _loading = false;
@@ -886,7 +963,11 @@ class AuthProvider with ChangeNotifier {
 
       final response = await http.post(
         Uri.parse('$baseUrl/api/executives'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode(body),
       );
 
@@ -933,7 +1014,11 @@ class AuthProvider with ChangeNotifier {
 
       final response = await http.put(
         Uri.parse('$baseUrl/api/executives/$id'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode(body),
       );
 
@@ -966,7 +1051,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.delete(
         Uri.parse('$baseUrl/api/executives/$id'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       _loading = false;
@@ -995,7 +1084,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.get(
         Uri.parse('$baseUrl/api/executives/$id'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       _loading = false;
@@ -1025,7 +1118,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.get(
         Uri.parse('$baseUrl/api/faculty'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       _loading = false;
@@ -1073,7 +1170,11 @@ class AuthProvider with ChangeNotifier {
 
       final response = await http.post(
         Uri.parse('$baseUrl/api/faculty'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode(body),
       );
 
@@ -1119,7 +1220,11 @@ class AuthProvider with ChangeNotifier {
 
       final response = await http.put(
         Uri.parse('$baseUrl/api/faculty/$id'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode(body),
       );
 
@@ -1150,7 +1255,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.delete(
         Uri.parse('$baseUrl/api/faculty/$id'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       _loading = false;
@@ -1230,7 +1339,11 @@ class AuthProvider with ChangeNotifier {
 
       final response = await http.get(
         Uri.parse('$baseUrl/api/events/month?month=$month&year=$year'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       debugPrint('Response status: ${response.statusCode}');
@@ -1260,9 +1373,8 @@ class AuthProvider with ChangeNotifier {
 
                   for (var event in eventsList) {
                     try {
-                      debugPrint('Processing event: ${event['title']}');
-                      debugPrint('Event allowedView: ${event['allowedView']}');
-
+                      debugPrint(
+                          'Processing event: ${event['title']}, status: ${event['status']}');
                       final parsedEvent =
                           Events.fromJson(Map<String, dynamic>.from(event));
                       parsedEvents.add(parsedEvent);
@@ -1272,7 +1384,10 @@ class AuthProvider with ChangeNotifier {
                   }
 
                   if (parsedEvents.isNotEmpty) {
-                    events[date] = parsedEvents;
+                    // Normalize the date to avoid time-related issues
+                    final normalizedDate =
+                        DateTime(date.year, date.month, date.day);
+                    events[normalizedDate] = parsedEvents;
                   }
                 }
               } catch (e) {
@@ -1370,20 +1485,18 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  // In your auth_provider.dart file, update these methods
-
   Future<void> updateEvent(int eventId, Map<String, dynamic> eventData,
       [File? imageFile]) async {
     try {
       _loading = true;
-      _error = null;
       notifyListeners();
 
       final token = await _getToken();
       if (token == null) throw Exception('Not authenticated');
 
+      // Create multipart request
       var request = http.MultipartRequest(
-        'POST', // We'll use POST and include _method field for Laravel
+        'POST', // Using POST with _method field for Laravel
         Uri.parse('$baseUrl/api/events/$eventId'),
       );
 
@@ -1393,20 +1506,23 @@ class AuthProvider with ChangeNotifier {
         'Accept': 'application/json',
       });
 
-      // Add the _method field to simulate PUT request
+      // Add _method field for Laravel to handle it as PUT
       request.fields['_method'] = 'PUT';
 
-      // Process and validate date/time
-      if (eventData['event_date'] != null) {
-        final date = DateTime.parse(eventData['event_date']);
-        eventData['event_date'] = DateFormat('yyyy-MM-dd').format(date);
+      // Handle allowed view
+      if (eventData['allowedView'] != null) {
+        if (eventData['allowedView'] is List) {
+          request.fields['allowedView'] = json.encode(eventData['allowedView']);
+        } else {
+          request.fields['allowedView'] = eventData['allowedView'].toString();
+        }
       }
 
-      // Add all event data as fields
+      // Add all other event data fields
       eventData.forEach((key, value) {
-        if (value != null) {
-          if (value is List) {
-            request.fields[key] = json.encode(value);
+        if (value != null && key != 'allowedView') {
+          if (value is DateTime) {
+            request.fields[key] = value.toIso8601String();
           } else {
             request.fields[key] = value.toString();
           }
@@ -1457,7 +1573,11 @@ class AuthProvider with ChangeNotifier {
       // Make sure to include the _method field in the body for Laravel
       final response = await http.post(
         Uri.parse('$baseUrl/api/events/$eventId'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode({'_method': 'DELETE'}),
       );
 
@@ -1488,7 +1608,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.get(
         Uri.parse('$baseUrl/api/notifications'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       debugPrint('Notifications Response: ${response.body}');
@@ -1523,7 +1647,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.put(
         Uri.parse('$baseUrl/api/notifications/$notificationId/read'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -1551,7 +1679,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.put(
         Uri.parse('$baseUrl/api/notifications/mark-all-read'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -1576,7 +1708,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.delete(
         Uri.parse('$baseUrl/api/notifications/$notificationId'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -1593,16 +1729,18 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  // Event Response Methods
   Future<void> updateEventResponse(String eventId, String response) async {
     try {
       final headers = await _getAuthHeaders();
       final responseData = await http.post(
         Uri.parse('$baseUrl/api/events/$eventId/response'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode({
           'response': response,
-          'user_id': _user?.id,
         }),
       );
 
@@ -1610,11 +1748,6 @@ class AuthProvider with ChangeNotifier {
         final errorData = json.decode(responseData.body);
         throw Exception(
             errorData['message'] ?? 'Failed to update event response');
-      }
-
-      // Update local notification count if needed
-      if (json.decode(responseData.body)['notification_created'] == true) {
-        await fetchNotifications();
       }
 
       notifyListeners();
@@ -1631,7 +1764,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.post(
         Uri.parse('$baseUrl/api/events/responses'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode({
           'event_ids': eventIds,
           'user_id': _user?.id,
@@ -1679,7 +1816,11 @@ class AuthProvider with ChangeNotifier {
       final headers = await _getAuthHeaders();
       final response = await http.get(
         Uri.parse('$baseUrl/api/events/$eventId'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       if (response.statusCode != 200) {
@@ -1710,7 +1851,11 @@ Join the event here: $shareLink''';
       final headers = await _getAuthHeaders();
       final response = await http.post(
         Uri.parse('$baseUrl/api/events/$eventId/share-link'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -1729,7 +1874,11 @@ Join the event here: $shareLink''';
       final headers = await _getAuthHeaders();
       final response = await http.post(
         Uri.parse('$baseUrl/api/events/$eventId/share'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       if (response.statusCode != 200) {
@@ -1749,7 +1898,11 @@ Join the event here: $shareLink''';
       final headers = await _getAuthHeaders();
       final response = await http.get(
         Uri.parse('$baseUrl/api/events/$eventId'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       _loading = false;
@@ -1769,32 +1922,23 @@ Join the event here: $shareLink''';
     }
   }
 
-  Future<Map<String, List<EventResponse>>> getEventResponses(
-      List<String> eventIds) async {
+  Future<Map<String, dynamic>> getEventResponses(List<String> eventIds) async {
     try {
       final headers = await _getAuthHeaders();
       final response = await http.post(
         Uri.parse('$baseUrl/api/events/responses'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode({
           'event_ids': eventIds,
         }),
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData =
-            json.decode(response.body)['data'];
-        Map<String, List<EventResponse>> eventResponses = {};
-
-        responseData.forEach((eventId, responses) {
-          if (responses != null) {
-            eventResponses[eventId] = (responses as List)
-                .map((response) => EventResponse.fromJson(response))
-                .toList();
-          }
-        });
-
-        return eventResponses;
+        return json.decode(response.body);
       } else {
         throw Exception('Failed to fetch event responses: ${response.body}');
       }
@@ -1811,7 +1955,11 @@ Join the event here: $shareLink''';
       final headers = await _getAuthHeaders();
       final response = await http.post(
         Uri.parse('$baseUrl/api/events/participant-counts'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode({
           'event_ids': eventIds,
         }),
@@ -1847,7 +1995,11 @@ Join the event here: $shareLink''';
       final headers = await _getAuthHeaders();
       final response = await http.put(
         Uri.parse('$baseUrl/api/notifications/$notificationId/read'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       if (response.statusCode != 200) {
@@ -1868,7 +2020,11 @@ Join the event here: $shareLink''';
       final headers = await _getAuthHeaders();
       final response = await http.put(
         Uri.parse('$baseUrl/api/user/notification-settings'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode(settings),
       );
 
@@ -1891,7 +2047,11 @@ Join the event here: $shareLink''';
       final response = await http.get(
         Uri.parse(
             '$baseUrl/api/events/search?query=${Uri.encodeComponent(query)}'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -1921,7 +2081,11 @@ Join the event here: $shareLink''';
       final headers = await _getAuthHeaders();
       final response = await http.get(
         Uri.parse('$baseUrl/api/events/$eventId/calendar-link'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -1937,25 +2101,40 @@ Join the event here: $shareLink''';
     }
   }
 
-  // Add these methods to your AuthProvider class
-
   Future<List<Location>> fetchLocations() async {
     try {
       _loading = true;
+      _error = null;
       notifyListeners();
 
       final headers = await _getAuthHeaders();
       final response = await http.get(
         Uri.parse('$baseUrl/api/locations'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
       );
 
       _loading = false;
       notifyListeners();
 
       if (response.statusCode == 200) {
-        final List<dynamic> locationsJson = json.decode(response.body)['data'];
-        return locationsJson.map((json) => Location.fromJson(json)).toList();
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final List<dynamic> locationsJson = responseData['data'];
+
+        // Debug the response
+        print('Response data: ${response.body}');
+
+        return locationsJson.map((json) {
+          try {
+            return Location.fromJson(json);
+          } catch (e) {
+            print('Error parsing location: $e');
+            rethrow;
+          }
+        }).toList();
       } else {
         throw Exception('Failed to load locations: ${response.body}');
       }
@@ -1974,27 +2153,38 @@ Join the event here: $shareLink''';
       notifyListeners();
 
       final headers = await _getAuthHeaders();
+
+      // Debug print for request
+      print('Request body: ${json.encode({'description': description})}');
+
       final response = await http.post(
         Uri.parse('$baseUrl/api/locations'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode({
           'description': description,
         }),
       );
 
-      _loading = false;
-      notifyListeners();
+      // Debug prints for response
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
       if (response.statusCode != 201) {
-        throw Exception(
-          'Failed to add location: ${json.decode(response.body)['message']}',
-        );
+        final errorData = json.decode(response.body);
+        throw Exception(errorData['message'] ?? 'Failed to add location');
       }
+
+      _loading = false;
+      notifyListeners();
     } catch (e) {
       _loading = false;
       _error = e.toString();
       notifyListeners();
-      rethrow;
+      throw Exception('Failed to add location: $e');
     }
   }
 
@@ -2005,27 +2195,38 @@ Join the event here: $shareLink''';
       notifyListeners();
 
       final headers = await _getAuthHeaders();
+
+      // Debug print for request
+      print('Updating location $id with description: $description');
+
       final response = await http.put(
         Uri.parse('$baseUrl/api/locations/$id'),
-        headers: headers,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
         body: json.encode({
           'description': description,
         }),
       );
 
-      _loading = false;
-      notifyListeners();
+      // Debug prints
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
       if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to update location: ${json.decode(response.body)['message']}',
-        );
+        final errorData = json.decode(response.body);
+        throw Exception(errorData['message'] ?? 'Failed to update location');
       }
+
+      _loading = false;
+      notifyListeners();
     } catch (e) {
       _loading = false;
       _error = e.toString();
       notifyListeners();
-      rethrow;
+      throw Exception('Failed to update location: $e');
     }
   }
 
@@ -2036,24 +2237,155 @@ Join the event here: $shareLink''';
       notifyListeners();
 
       final headers = await _getAuthHeaders();
+
+      // Debug print
+      print('Deleting location: $id');
+
       final response = await http.delete(
         Uri.parse('$baseUrl/api/locations/$id'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': headers['Authorization'] ?? '',
+        },
+      );
+
+      // Debug prints
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode != 200) {
+        final errorData = json.decode(response.body);
+        throw Exception(errorData['message'] ?? 'Failed to delete location');
+      }
+
+      _loading = false;
+      notifyListeners();
+    } catch (e) {
+      _loading = false;
+      _error = e.toString();
+      notifyListeners();
+      throw Exception('Failed to delete location: $e');
+    }
+  }
+
+  Future<List<Survey>> fetchSurveys() async {
+    try {
+      _loading = true;
+      notifyListeners();
+
+      final headers = await _getAuthHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/surveys'),
         headers: headers,
       );
 
       _loading = false;
       notifyListeners();
 
-      if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to delete location: ${json.decode(response.body)['message']}',
-        );
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['success'] == true && responseData['data'] != null) {
+          return (responseData['data'] as List)
+              .map((survey) => Survey.fromJson(survey))
+              .toList();
+        }
+        return [];
+      } else {
+        throw Exception('Failed to load surveys: ${response.body}');
       }
     } catch (e) {
       _loading = false;
       _error = e.toString();
       notifyListeners();
-      rethrow;
+      throw Exception('Error fetching surveys: $e');
+    }
+  }
+
+  Future<void> createSurvey(Map<String, dynamic> surveyData) async {
+    try {
+      _loading = true;
+      notifyListeners();
+
+      final headers = await _getAuthHeaders();
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/surveys'),
+        headers: headers,
+        body: json.encode(surveyData),
+      );
+
+      _loading = false;
+      notifyListeners();
+
+      if (response.statusCode != 201) {
+        final errorData = json.decode(response.body);
+        throw Exception(errorData['message'] ?? 'Failed to create survey');
+      }
+    } catch (e) {
+      _loading = false;
+      _error = e.toString();
+      notifyListeners();
+      throw Exception('Error creating survey: $e');
+    }
+  }
+
+  Future<void> submitSurveyResponse(
+      int surveyId, Map<String, dynamic> answers) async {
+    try {
+      _loading = true;
+      notifyListeners();
+
+      final headers = await _getAuthHeaders();
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/surveys/$surveyId/submit'),
+        headers: headers,
+        body: json.encode({'answers': answers}),
+      );
+
+      _loading = false;
+      notifyListeners();
+
+      if (response.statusCode != 200) {
+        final errorData = json.decode(response.body);
+        throw Exception(
+            errorData['message'] ?? 'Failed to submit survey response');
+      }
+    } catch (e) {
+      _loading = false;
+      _error = e.toString();
+      notifyListeners();
+      throw Exception('Error submitting survey response: $e');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getSurveyResponses(int surveyId) async {
+    try {
+      _loading = true;
+      notifyListeners();
+
+      final headers = await _getAuthHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/surveys/$surveyId/responses'),
+        headers: headers,
+      );
+
+      _loading = false;
+      notifyListeners();
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData['success'] == true && responseData['data'] != null) {
+          return List<Map<String, dynamic>>.from(responseData['data']);
+        }
+        return [];
+      } else {
+        throw Exception('Failed to load survey responses: ${response.body}');
+      }
+    } catch (e) {
+      _loading = false;
+      _error = e.toString();
+      notifyListeners();
+      throw Exception('Error fetching survey responses: $e');
     }
   }
 }
